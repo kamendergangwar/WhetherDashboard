@@ -4,6 +4,11 @@ A beautiful and interactive weather dashboard built with React, TypeScript, and 
 
 ![Weather Dashboard](https://t4.ftcdn.net/jpg/06/41/91/85/360_F_641918542_bL3O5qWqKmaVrxM12Qa1pp1owFvKKP3k.jpg)
 
+
+## Deployment
+
+Check out the live deployment [here](https://whether-dashboard-livid.vercel.app/).
+
 ## Features
 
 - 📊 Interactive temperature charts with toggleable metrics
