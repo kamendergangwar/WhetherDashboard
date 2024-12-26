@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Thermometer } from 'lucide-react';
 import { format, subMonths } from 'date-fns';
 import { CoordinateInput } from './components/CoordinateInput';
@@ -6,7 +6,9 @@ import { DateInput } from './components/DateInput';
 import { WeatherChart } from './components/WeatherChart';
 import { WeatherTable } from './components/WeatherTable';
 import { ControlButtons } from './components/ControlButtons';
+import { validateWeatherForm } from './utils/validation';
 import type { WeatherResponse } from './types/weather';
+import type { FormState } from './types/form';
 
 function App() {
   const [latitude, setLatitude] = useState('51.5074');
@@ -15,12 +17,18 @@ function App() {
   const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [weatherData, setWeatherData] = useState<WeatherResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [formState, setFormState] = useState<FormState>({ isValid: true, errors: {} });
+
+  useEffect(() => {
+    const validation = validateWeatherForm(latitude, longitude, startDate, endDate);
+    setFormState(validation);
+  }, [latitude, longitude, startDate, endDate]);
 
   const fetchWeatherData = async () => {
+    if (!formState.isValid) return;
+
     try {
       setLoading(true);
-      setError(null);
 
       const response = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean,apparent_temperature_max,apparent_temperature_min,apparent_temperature_mean`
@@ -33,7 +41,12 @@ function App() {
       const data: WeatherResponse = await response.json();
       setWeatherData(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setFormState({
+        isValid: false,
+        errors: { 
+          latitude: err instanceof Error ? err.message : 'An error occurred'
+        }
+      });
     } finally {
       setLoading(false);
     }
@@ -45,12 +58,11 @@ function App() {
     setStartDate('');
     setEndDate('');
     setWeatherData(null);
-    setError(null);
+    setFormState({ isValid: false, errors: {} });
   };
 
   return (
     <div className="min-h-screen relative">
-      {/* Background Image */}
       <div 
         className="fixed inset-0 z-0"
         style={{
@@ -60,7 +72,6 @@ function App() {
           backgroundRepeat: 'no-repeat'
         }}
       />
-      {/* Overlay */}
       <div className="fixed inset-0 z-0 bg-blue-600/20 backdrop-blur-[2px]" />
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
@@ -84,6 +95,7 @@ function App() {
               onChange={setLatitude}
               min={-90}
               max={90}
+              error={formState.errors.latitude}
             />
             <CoordinateInput
               label="Longitude"
@@ -91,18 +103,21 @@ function App() {
               onChange={setLongitude}
               min={-180}
               max={180}
+              error={formState.errors.longitude}
             />
             <DateInput
               label="Start Date"
               value={startDate}
               onChange={setStartDate}
               max={endDate}
+              error={formState.errors.startDate}
             />
             <DateInput
               label="End Date"
               value={endDate}
               onChange={setEndDate}
               min={startDate}
+              error={formState.errors.endDate}
             />
           </div>
 
@@ -110,18 +125,9 @@ function App() {
             onFetch={fetchWeatherData}
             onReset={handleReset}
             loading={loading}
+            disabled={!formState.isValid}
           />
         </div>
-
-        {error && (
-          <div className="bg-red-50/95 backdrop-blur-sm border-l-4 border-red-400 p-4 mb-8 rounded-r-lg shadow-lg">
-            <div className="flex">
-              <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {weatherData && (
           <div className="space-y-8">

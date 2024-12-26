@@ -5,16 +5,22 @@ interface ControlButtonsProps {
   onFetch: () => void;
   onReset: () => void;
   loading: boolean;
+  disabled: boolean;
 }
 
-export const ControlButtons: React.FC<ControlButtonsProps> = ({ onFetch, onReset, loading }) => {
-  const buttonClass = "px-6 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 flex items-center justify-center transition-colors duration-200 shadow-md";
+export const ControlButtons: React.FC<ControlButtonsProps> = ({
+  onFetch,
+  onReset,
+  loading,
+  disabled
+}) => {
+  const buttonClass = "px-6 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors duration-200 shadow-md";
   
   return (
     <div className="flex flex-col sm:flex-row gap-3">
       <button
         onClick={onFetch}
-        disabled={loading}
+        disabled={loading || disabled}
         className={`${buttonClass} bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500`}
       >
         {loading ? (
@@ -37,4 +43,4 @@ export const ControlButtons: React.FC<ControlButtonsProps> = ({ onFetch, onReset
       </button>
     </div>
   );
-}
+};
