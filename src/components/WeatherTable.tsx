@@ -1,5 +1,6 @@
 import React from 'react';
 import { WeatherData } from '../types/weather';
+import { TableTitle } from './TableTitle';
 import { TableHeader } from './TableHeader';
 import { TableRow } from './TableRow';
 import { TablePagination } from './TablePagination';
@@ -15,6 +16,10 @@ export const WeatherTable: React.FC<WeatherTableProps> = ({ data }) => {
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
+      <TableTitle 
+        startDate={data.time[0]} 
+        endDate={data.time[data.time.length - 1]} 
+      />
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <TableHeader />

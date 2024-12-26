@@ -6,7 +6,7 @@ export const useTablePagination = (totalItems: number) => {
 
   const totalPages = Math.ceil(totalItems / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
+  const endIndex = Math.min(startIndex + rowsPerPage, totalItems);
 
   return {
     currentPage,
