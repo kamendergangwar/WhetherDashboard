@@ -28,7 +28,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
       >
         {[5, 10, 20, 30, 40, 50].map((value) => (
           <option key={value} value={value}>
-            {value} rows per page
+            {value} 
           </option>
         ))}
       </select>
